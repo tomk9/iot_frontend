@@ -7,7 +7,7 @@ class Camera extends PureComponent {
         alt=""
         src="http://192.168.1.104:8081/"
        // style={{ transform: "scale(0.5)" }}
-        style={{ height: "400px" }}
+        style={{ height: "360px" }}
       />
     );
   }

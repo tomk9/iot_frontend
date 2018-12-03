@@ -7,6 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Chip from "@material-ui/core/Chip";
 import Button from "@material-ui/core/Button";
+import ButtonBase from "@material-ui/core/ButtonBase";
 import MenuItem from "@material-ui/core/MenuItem";
 import Switch from "@material-ui/core/Switch";
 import Table from "@material-ui/core/Table";
@@ -50,7 +51,9 @@ class Panel extends Component {
         { id: 5, name: "Temperature", value: null }
       ],
       date: null,
-      data: []
+      data: [],
+      graphTitle: "Temperature",
+      graphData: "temperature"
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -103,7 +106,7 @@ class Panel extends Component {
           }
         })
         .catch(error => {
-        //   console.log(error.response.status);
+          //   console.log(error.response.status);
           if (error.response && error.response.status === 401) {
             this.setState({
               error: error.response.statusText
@@ -257,8 +260,18 @@ class Panel extends Component {
   };
 
   render() {
-    const { onLogout } = this.props;
-    const { led1, led2, led3, servo, rows, date, data } = this.state;
+    const { onLogout, user } = this.props;
+    const {
+      led1,
+      led2,
+      led3,
+      servo,
+      rows,
+      date,
+      data,
+      graphTitle,
+      graphData
+    } = this.state;
     return (
       <Card>
         <Grid
@@ -278,6 +291,11 @@ class Panel extends Component {
               spacing={16}
               style={{ padding: 40 }}
             >
+              <Grid item>
+                <Typography variant="h6" color="inherit">
+                  {user}
+                </Typography>
+              </Grid>
               <Grid item>
                 <Button variant="contained" color="primary" onClick={onLogout}>
                   Logout
@@ -344,12 +362,45 @@ class Panel extends Component {
                       <TableCell numeric>Value</TableCell>
                     </TableRow>
                   </TableHead>
+
                   <TableBody>
                     {rows.map(row => {
                       return (
                         <TableRow key={row.id}>
                           <TableCell component="th" scope="row">
-                            {row.name}
+                            <ButtonBase
+                              onClick={() => {
+                                let graphData = "temperature";
+                                switch (row.id) {
+                                  case 0:
+                                    graphData = "dampness";
+                                    break;
+                                  case 1:
+                                    graphData = "distance";
+                                    break;
+                                  case 2:
+                                    graphData = "lightIntensity1";
+                                    break;
+                                  case 3:
+                                    graphData = "lightIntensity2";
+                                    break;
+                                  case 4:
+                                    graphData = "pressure";
+                                    break;
+                                  case 5:
+                                    graphData = "temperature";
+                                    break;
+                                  default:
+                                    graphData = "temperature";
+                                }
+                                this.setState({
+                                  graphTitle: row.name,
+                                  graphData
+                                });
+                              }}
+                            >
+                              {row.name}
+                            </ButtonBase>
                           </TableCell>
                           <TableCell numeric>{row.value}</TableCell>
                         </TableRow>
@@ -375,18 +426,24 @@ class Panel extends Component {
               style={{ padding: 40 }}
             >
               <Grid item>
+                <Typography variant="h6" color="inherit">
+                  Preview
+                </Typography>
+              </Grid>
+              <Grid item>
                 <Camera />
               </Grid>
               <Grid item>
-                <LineChart width={800} height={400} data={data}>
+                <Typography variant="h6" color="inherit">
+                  {graphTitle}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <LineChart width={640} height={360} data={data}>
                   <XAxis dataKey="date" />
                   <YAxis />
                   <CartesianGrid strokeDasharray="3 3" />
-                  <Line
-                    type="monotone"
-                    dataKey="temperature"
-                    stroke="#8884d8"
-                  />
+                  <Line type="monotone" dataKey={graphData} stroke="#8884d8" />
                 </LineChart>
               </Grid>
             </Grid>
