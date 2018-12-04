@@ -443,7 +443,12 @@ class Panel extends Component {
                   <XAxis dataKey="date" />
                   <YAxis />
                   <CartesianGrid strokeDasharray="3 3" />
-                  <Line type="monotone" dataKey={graphData} stroke="#8884d8" />
+                  <Line
+                    type="monotone"
+                    dataKey={graphData}
+                    stroke="#8884d8"
+                    isAnimationActive={false}
+                  />
                 </LineChart>
               </Grid>
             </Grid>
